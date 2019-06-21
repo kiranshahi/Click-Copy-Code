@@ -2,7 +2,7 @@
   "name": "Click Copy {Code}",
   "version": "1.0",
   "author": "Kiran Shahi",
-  "homepage_url": null,
+  "homepage_url": "https://github.com/kiranshahi/Click-Copy-Code",
   "description": "Software engineer's friend. Helps to copy code from stackoverflow in double click.",
   "icons": {
     "16": "images/curly-brackets-16.png",
@@ -13,6 +13,7 @@
   "content_scripts": [
     {
       "matches": [ "<all_urls>" ],
+      "css": [ "style.css" ],
       "js": [ "script.js" ],
       "run_at": "document_end"
     }
