@@ -14,12 +14,24 @@
             let cobj = this;
             document.querySelectorAll("pre, code").forEach(codeEle => {
                 codeEle.addEventListener('dblclick', function (e) {
-                    let range = document.createRange();
-                    range.selectNode(this);
-                    window.getSelection().removeAllRanges();
-                    window.getSelection().addRange(range);
-                    document.execCommand("Copy") ? cobj.showMsg("Code snippet copied successfully !") : cobj.showMsg("Opps!! some error occured while copying code snippet.");
-                    window.getSelection().empty();
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(codeEle.textContent).then(
+                            function(){
+                                cobj.showMsg("Code snippet copied successfully !") // success 
+                            })
+                          .catch(
+                             function() {
+                                cobj.showMsg("Opps!! some error occured while copying code snippet."); // error
+                          });
+                    } else {
+                        let range = document.createRange();
+
+                        range.selectNode(this);
+                        window.getSelection().removeAllRanges();
+                        window.getSelection().addRange(range);
+                        document.execCommand("Copy") ? cobj.showMsg("Code snippet copied successfully !") : cobj.showMsg("Opps!! some error occured while copying code snippet.");
+                        window.getSelection().empty();
+                    }
                 });
             });
         },
