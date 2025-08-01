@@ -2,6 +2,7 @@
     "use strict";
     let ccc = {
         copyActive: true,
+        interactionMode: 'dblclick',
         init: function () {
             let cobj = this;
             this.loadState(function () {
@@ -17,15 +18,22 @@
         },
         copyCode: function () {
             let cobj = this;
+            const events = [];
+            if (cobj.interactionMode === 'dblclick' || cobj.interactionMode === 'both') {
+                events.push('dblclick');
+            }
+            if (cobj.interactionMode === 'hover' || cobj.interactionMode === 'both') {
+                events.push('mouseenter');
+            }
             document.querySelectorAll("pre, code").forEach(codeEle => {
-                codeEle.addEventListener('dblclick', function (e) {
+                events.forEach(evt => codeEle.addEventListener(evt, function () {
                     if (!cobj.copyActive) {
                         return;
                     }
                     if (navigator.clipboard) {
                         navigator.clipboard.writeText(codeEle.textContent).then(
                             function(){
-                                cobj.showMsg("Code snippet copied successfully !") // success 
+                                cobj.showMsg("Code snippet copied successfully !") // success
                             })
                           .catch(
                              function() {
@@ -40,7 +48,7 @@
                         document.execCommand("copy") ? cobj.showMsg("Code snippet copied successfully !") : cobj.showMsg("Opps!! some error occured while copying code snippet.");
                         window.getSelection().empty();
                     }
-                });
+                }));
             });
         },
         registerShortcut: function () {
@@ -56,9 +64,12 @@
         loadState: function (callback) {
             let cobj = this;
             if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-                chrome.storage.local.get(['copyActive'], function (result) {
+                chrome.storage.local.get(['copyActive', 'interactionMode'], function (result) {
                     if (typeof result.copyActive !== 'undefined') {
                         cobj.copyActive = result.copyActive;
+                    }
+                    if (result.interactionMode) {
+                        cobj.interactionMode = result.interactionMode;
                     }
                     callback();
                 });
@@ -67,14 +78,19 @@
                 if (stored !== null) {
                     cobj.copyActive = stored === 'true';
                 }
+                let mode = localStorage.getItem('interactionMode');
+                if (mode) {
+                    cobj.interactionMode = mode;
+                }
                 callback();
             }
         },
         saveState: function () {
             if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-                chrome.storage.local.set({ copyActive: this.copyActive });
+                chrome.storage.local.set({ copyActive: this.copyActive, interactionMode: this.interactionMode });
             } else {
                 localStorage.setItem('copyActive', this.copyActive);
+                localStorage.setItem('interactionMode', this.interactionMode);
             }
         },
         showMsg: function (message) {
