@@ -6,12 +6,12 @@
         init: function () {
             let cobj = this;
             this.loadState(function () {
-                cobj.notifactionDom();
+                cobj.notificationDom();
                 cobj.copyCode();
                 cobj.registerShortcut();
             });
         },
-        notifactionDom: function () {
+        notificationDom: function () {
             let div = document.createElement('div');
             div.setAttribute("id", "cccTost");
             document.body.appendChild(div);
