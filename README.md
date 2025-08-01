@@ -10,3 +10,8 @@
 
 Press `Alt+C` to enable or disable copying. A toast will indicate the current state.
 The extension remembers your choice for future pages.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
