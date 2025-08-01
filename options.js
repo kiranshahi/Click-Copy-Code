@@ -23,7 +23,7 @@
 
     function load(){
         const fallbackTheme = {scheme: 'dark', bgColor: '#6002ee', textColor: '#f5f5f5'};
-        if(chrome.storage && chrome.storage.local){
+        if(typeof chrome !== "undefined" && chrome.storage && chrome.storage.local){
             chrome.storage.local.get(['interactionMode', 'theme'], function(res){
                 if(res.interactionMode){
                     modeSelect.value = res.interactionMode;
@@ -49,7 +49,7 @@
             theme.bgColor = bgColor.value;
             theme.textColor = textColor.value;
         }
-        if(chrome.storage && chrome.storage.local){
+        if(typeof chrome !== "undefined" && chrome.storage && chrome.storage.local){
             chrome.storage.local.set({interactionMode: mode, theme}, function(){
                 status.textContent = 'Saved!';
                 setTimeout(()=> status.textContent='', 1000);
