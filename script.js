@@ -2,17 +2,27 @@
     "use strict";
     let ccc = {
         copyActive: true,
+        theme: 'light',
         init: function () {
             let cobj = this;
             this.loadState(function () {
+                cobj.applyTheme();
                 cobj.notifactionDom();
                 cobj.copyCode();
                 cobj.registerShortcut();
             });
         },
+        applyTheme: function () {
+            this.theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', this.theme);
+        },
         notifactionDom: function () {
             let div = document.createElement('div');
             div.setAttribute("id", "cccTost");
+            if (this.theme === 'dark') {
+                div.style.backgroundColor = '#333333';
+                div.style.color = '#f5f5f5';
+            }
             document.body.appendChild(div);
         },
         copyCode: function () {
