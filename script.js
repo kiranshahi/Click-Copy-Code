@@ -2,6 +2,7 @@
     "use strict";
     let ccc = {
         copyActive: true,
+        theme: { scheme: 'light', bgColor: '#6002ee', textColor: '#f5f5f5' },
         init: function () {
             let cobj = this;
             this.loadState(function () {
@@ -13,6 +14,14 @@
         notifactionDom: function () {
             let div = document.createElement('div');
             div.setAttribute("id", "cccTost");
+            if (this.theme.scheme === 'light') {
+                div.classList.add('light');
+            } else if (this.theme.scheme === 'dark') {
+                div.classList.add('dark');
+            } else if (this.theme.scheme === 'custom') {
+                div.style.backgroundColor = this.theme.bgColor;
+                div.style.color = this.theme.textColor;
+            }
             document.body.appendChild(div);
         },
         copyCode: function () {
@@ -56,9 +65,12 @@
         loadState: function (callback) {
             let cobj = this;
             if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-                chrome.storage.local.get(['copyActive'], function (result) {
+                chrome.storage.local.get(['copyActive', 'theme'], function (result) {
                     if (typeof result.copyActive !== 'undefined') {
                         cobj.copyActive = result.copyActive;
+                    }
+                    if (result.theme) {
+                        cobj.theme = result.theme;
                     }
                     callback();
                 });
@@ -66,6 +78,10 @@
                 let stored = localStorage.getItem('copyActive');
                 if (stored !== null) {
                     cobj.copyActive = stored === 'true';
+                }
+                let themeStored = localStorage.getItem('theme');
+                if (themeStored) {
+                    try { cobj.theme = JSON.parse(themeStored); } catch(e) {}
                 }
                 callback();
             }
@@ -79,9 +95,9 @@
         },
         showMsg: function (message) {
             let x = document.getElementById("cccTost");
-            x.className = "show";
+            x.classList.add("show");
             x.textContent = message;
-            setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
+            setTimeout(function () { x.classList.remove("show"); }, 3000);
         }
     };
     function ClickCopy() { }

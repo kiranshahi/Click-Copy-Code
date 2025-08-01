@@ -65,3 +65,14 @@
         opacity: 0;
     }
 }
+
+#cccTost.light {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+#cccTost.dark {
+    background-color: #333;
+    color: #f5f5f5;
+}
+
