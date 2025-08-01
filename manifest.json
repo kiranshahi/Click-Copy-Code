@@ -18,5 +18,8 @@
       "run_at": "document_end"
     }
   ],
+  "permissions": [
+    "storage"
+  ],
   "manifest_version": 3
 }
