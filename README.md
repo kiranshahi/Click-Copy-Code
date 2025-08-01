@@ -1,6 +1,6 @@
-# Click Copy {Code}
+# Click Copy {Code} – One-Click Copy
 
-[Google Chrome](https://chrome.google.com/webstore/detail/click-copy-%7Bcode%7D/kjbnobdekbdpankopjnpjklfgklhcjeo) extension to copy codeblock from any website on simply double click. 
+[Google Chrome](https://chrome.google.com/webstore/detail/click-copy-%7Bcode%7D/kjbnobdekbdpankopjnpjklfgklhcjeo) extension to copy code blocks from any website with a single click.
 
 ## Preview
 
