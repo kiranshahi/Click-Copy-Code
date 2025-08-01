@@ -2,6 +2,7 @@
     "use strict";
     let ccc = {
         copyActive: true,
+        additionalSelectors: [],
         init: function () {
             let cobj = this;
             this.loadState(function () {
@@ -17,7 +18,8 @@
         },
         copyCode: function () {
             let cobj = this;
-            document.querySelectorAll("pre, code").forEach(codeEle => {
+            let selectors = ['pre', 'code'].concat(cobj.additionalSelectors || []);
+            document.querySelectorAll(selectors.join(', ')).forEach(codeEle => {
                 codeEle.addEventListener('dblclick', function (e) {
                     if (!cobj.copyActive) {
                         return;
@@ -56,9 +58,12 @@
         loadState: function (callback) {
             let cobj = this;
             if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-                chrome.storage.local.get(['copyActive'], function (result) {
+                chrome.storage.local.get(['copyActive', 'additionalSelectors'], function (result) {
                     if (typeof result.copyActive !== 'undefined') {
                         cobj.copyActive = result.copyActive;
+                    }
+                    if (Array.isArray(result.additionalSelectors)) {
+                        cobj.additionalSelectors = result.additionalSelectors;
                     }
                     callback();
                 });
@@ -66,6 +71,14 @@
                 let stored = localStorage.getItem('copyActive');
                 if (stored !== null) {
                     cobj.copyActive = stored === 'true';
+                }
+                let selStored = localStorage.getItem('additionalSelectors');
+                if (selStored) {
+                    try {
+                        cobj.additionalSelectors = JSON.parse(selStored);
+                    } catch (e) {
+                        cobj.additionalSelectors = [];
+                    }
                 }
                 callback();
             }

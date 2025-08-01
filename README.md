@@ -10,3 +10,7 @@
 
 Press `Alt+C` to enable or disable copying. A toast will indicate the current state.
 The extension remembers your choice for future pages.
+
+## Options
+
+The options page lets you define extra CSS selectors for elements that should act as code blocks. Each selector should be on its own line.

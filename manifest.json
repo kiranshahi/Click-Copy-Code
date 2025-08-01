@@ -1,9 +1,10 @@
 {
   "name": "Click Copy {Code}",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Kiran Shahi",
   "homepage_url": "https://github.com/kiranshahi/Click-Copy-Code",
   "description": "Software engineer's friend. Helps to copy code from any website just in double click.",
+  "options_page": "options.html",
   "icons": {
     "16": "images/curly-brackets-16.png",
     "32": "images/curly-brackets-32.png",
