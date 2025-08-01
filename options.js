@@ -68,5 +68,4 @@
 
     saveBtn.addEventListener('click', save);
     document.addEventListener('DOMContentLoaded', load);
-    load();
 })();
