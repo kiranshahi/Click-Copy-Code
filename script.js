@@ -1,9 +1,11 @@
 (function () {
     "use strict";
     let ccc = {
+        copyActive: true,
         init: function () {
             this.notifactionDom();
             this.copyCode();
+            this.registerShortcut();
         },
         notifactionDom: function () {
             let div = document.createElement('div');
@@ -14,6 +16,9 @@
             let cobj = this;
             document.querySelectorAll("pre, code").forEach(codeEle => {
                 codeEle.addEventListener('dblclick', function (e) {
+                    if (!cobj.copyActive) {
+                        return;
+                    }
                     if (navigator.clipboard) {
                         navigator.clipboard.writeText(codeEle.textContent).then(
                             function(){
@@ -35,6 +40,15 @@
                 });
             });
         },
+        registerShortcut: function () {
+            let cobj = this;
+            window.addEventListener('keydown', function (e) {
+                if (e.altKey && (e.key === 'c' || e.key === 'C')) {
+                    cobj.copyActive = !cobj.copyActive;
+                    cobj.showMsg(cobj.copyActive ? 'Copying enabled' : 'Copying disabled');
+                }
+            });
+        },
         showMsg: function (message) {
             let x = document.getElementById("cccTost");
             x.className = "show";
@@ -48,3 +62,4 @@
     };
     new ClickCopy().initialize();
 })();
+

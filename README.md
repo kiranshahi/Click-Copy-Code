@@ -5,3 +5,7 @@
 ## Preview
 
 ![Preview of how plugin works](preview.gif)
+
+## Shortcut
+
+Press `Alt+C` to enable or disable copying. A toast will indicate the current state.
