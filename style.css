@@ -1,4 +1,4 @@
-#cccTost {
+#cccToast {
     visibility: hidden;
     min-width: 250px;
     background-color: #6002ee;
@@ -12,7 +12,7 @@
     top: 30px;
 }
 
-    #cccTost.show {
+    #cccToast.show {
         visibility: visible;
         -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
         animation: fadein 0.5s, fadeout 0.5s 2.5s;
