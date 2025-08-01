@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Click Copy {Code} Options</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        label { display: block; margin-bottom: 10px; }
+        #stats { margin-top: 20px; }
+        button { margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Click Copy {Code} Options</h1>
+    <label>
+        <input type="checkbox" id="collectToggle"> Enable anonymous copy count collection
+    </label>
+    <div id="stats">
+        <div>Today: <span id="todayCount">0</span></div>
+        <div>Last 7 Days: <span id="weekCount">0</span></div>
+    </div>
+    <button id="exportBtn">Export</button>
+    <button id="resetBtn">Reset</button>
+    <script src="options.js"></script>
+</body>
+</html>
