@@ -29,7 +29,7 @@
                         range.selectNode(this);
                         window.getSelection().removeAllRanges();
                         window.getSelection().addRange(range);
-                        document.execCommand("Copy") ? cobj.showMsg("Code snippet copied successfully !") : cobj.showMsg("Opps!! some error occured while copying code snippet.");
+                        document.execCommand("copy") ? cobj.showMsg("Code snippet copied successfully !") : cobj.showMsg("Opps!! some error occured while copying code snippet.");
                         window.getSelection().empty();
                     }
                 });
