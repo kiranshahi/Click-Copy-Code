@@ -39,7 +39,7 @@
                             })
                           .catch(
                              function() {
-                                cobj.showMsg("Opps!! some error occured while copying code snippet."); // error
+                                cobj.showMsg("Oops!! some error occurred while copying code snippet."); // error
                           });
                     } else {
                         let range = document.createRange();
@@ -47,7 +47,7 @@
                         range.selectNode(this);
                         window.getSelection().removeAllRanges();
                         window.getSelection().addRange(range);
-                        document.execCommand("copy") ? cobj.showMsg("Code snippet copied successfully !") : cobj.showMsg("Opps!! some error occured while copying code snippet.");
+                        document.execCommand("copy") ? cobj.showMsg("Code snippet copied successfully !") : cobj.showMsg("Oops!! some error occurred while copying code snippet.");
                         window.getSelection().empty();
                     }
                 }));
