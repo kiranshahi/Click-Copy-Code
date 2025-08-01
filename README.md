@@ -6,6 +6,13 @@
 
 ![Preview of how plugin works](preview.gif)
 
+## Installation
+
+1. Clone or download this repository to your computer.
+2. Open `chrome://extensions` in Google Chrome.
+3. Enable **Developer Mode** using the toggle in the top-right corner.
+4. Click **Load unpacked** and select the directory where you downloaded the project.
+
 ## Shortcut
 
 Press `Alt+C` to enable or disable copying. A toast will indicate the current state.
