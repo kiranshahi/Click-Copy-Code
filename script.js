@@ -14,7 +14,7 @@
         },
         notificationDom: function () {
             let div = document.createElement('div');
-            div.setAttribute("id", "cccTost");
+            div.setAttribute("id", "cccToast");
             document.body.appendChild(div);
             this.applyTheme();
         },
@@ -104,7 +104,7 @@
             }
         },
         applyTheme: function(){
-            const x = document.getElementById('cccTost');
+            const x = document.getElementById('cccToast');
             if(!x) return;
             const t = this.theme || {};
             if(t.scheme === 'light'){
@@ -119,7 +119,7 @@
             }
         },
         showMsg: function (message) {
-            let x = document.getElementById("cccTost");
+            let x = document.getElementById("cccToast");
             this.applyTheme();
             x.className = "show";
             x.textContent = message;
