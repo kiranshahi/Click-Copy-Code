@@ -25,33 +25,40 @@
                 events.push('dblclick');
             }
             if (cobj.interactionMode === 'hover' || cobj.interactionMode === 'both') {
-                events.push('mouseenter');
+                // mouseenter doesn't bubble, use mouseover for delegation
+                events.push('mouseover');
             }
-            document.querySelectorAll("pre, code").forEach(codeEle => {
-                events.forEach(evt => codeEle.addEventListener(evt, function () {
-                    if (!cobj.copyActive) {
-                        return;
-                    }
-                    if (navigator.clipboard) {
-                        navigator.clipboard.writeText(codeEle.textContent).then(
-                            function(){
-                                cobj.showMsg("Code snippet copied successfully !") // success
-                            })
-                          .catch(
-                             function() {
-                                cobj.showMsg("Oops!! some error occurred while copying code snippet."); // error
-                          });
-                    } else {
-                        let range = document.createRange();
+            events.forEach(evt => document.body.addEventListener(evt, function (e) {
+                let target = e.target.closest('pre, code');
+                if (!target) {
+                    return;
+                }
+                if (evt === 'mouseover' && e.relatedTarget && target.contains(e.relatedTarget)) {
+                    // ignore events fired from element descendants
+                    return;
+                }
+                if (!cobj.copyActive) {
+                    return;
+                }
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(target.textContent).then(
+                        function(){
+                            cobj.showMsg("Code snippet copied successfully !") // success
+                        })
+                      .catch(
+                         function() {
+                            cobj.showMsg("Oops!! some error occurred while copying code snippet."); // error
+                      });
+                } else {
+                    let range = document.createRange();
 
-                        range.selectNode(this);
-                        window.getSelection().removeAllRanges();
-                        window.getSelection().addRange(range);
-                        document.execCommand("copy") ? cobj.showMsg("Code snippet copied successfully !") : cobj.showMsg("Oops!! some error occurred while copying code snippet.");
-                        window.getSelection().empty();
-                    }
-                }));
-            });
+                    range.selectNode(target);
+                    window.getSelection().removeAllRanges();
+                    window.getSelection().addRange(range);
+                    document.execCommand("copy") ? cobj.showMsg("Code snippet copied successfully !") : cobj.showMsg("Oops!! some error occurred while copying code snippet.");
+                    window.getSelection().empty();
+                }
+            }));
         },
         registerShortcut: function () {
             let cobj = this;
