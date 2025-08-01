@@ -18,3 +18,11 @@ You can choose how code is copied from the extension options page. Available opt
 * **dblclick** – copy when you double click a code block (default)
 * **hover** – copy when you hover over a code block
 * **both** – allow both interactions
+
+## Notification Theme
+
+The extension shows a toast when you copy code or toggle the shortcut. You can customize the toast colors from the options page.
+
+* **light** – light background with dark text
+* **dark** – purple background with light text (default)
+* **custom** – choose your own background and text colors
