@@ -10,3 +10,11 @@
 
 Press `Alt+C` to enable or disable copying. A toast will indicate the current state.
 The extension remembers your choice for future pages.
+
+## Interaction Mode
+
+You can choose how code is copied from the extension options page. Available options are:
+
+* **dblclick** – copy when you double click a code block (default)
+* **hover** – copy when you hover over a code block
+* **both** – allow both interactions
