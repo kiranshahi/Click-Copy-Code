@@ -20,45 +20,96 @@
         },
         copyCode: function () {
             let cobj = this;
-            const events = [];
             if (cobj.interactionMode === 'dblclick' || cobj.interactionMode === 'both') {
-                events.push('dblclick');
+                document.body.addEventListener('dblclick', function (e) {
+                    let target = e.target.closest('pre, code');
+                    if (!target) {
+                        return;
+                    }
+                    if (target.tagName.toLowerCase() === 'code') {
+                        let pre = target.closest('pre');
+                        if (pre) target = pre;
+                    }
+                    cobj.copyFromElement(target);
+                });
             }
             if (cobj.interactionMode === 'hover' || cobj.interactionMode === 'both') {
-                // mouseenter doesn't bubble, use mouseover for delegation
-                events.push('mouseover');
+                document.body.addEventListener('mouseover', function (e) {
+                    let target = e.target.closest('pre, code');
+                    if (!target) {
+                        return;
+                    }
+                    if (e.relatedTarget && target.contains(e.relatedTarget)) {
+                        return;
+                    }
+                    if (target.tagName.toLowerCase() === 'code') {
+                        let pre = target.closest('pre');
+                        if (pre) target = pre;
+                    }
+                    if (!cobj.copyActive) {
+                        return;
+                    }
+                    cobj.addCopyButton(target);
+                });
+                document.body.addEventListener('mouseleave', function (e) {
+                    let target = e.target.closest('pre, code');
+                    if (!target) {
+                        return;
+                    }
+                    cobj.removeCopyButton(target);
+                }, true);
             }
-            events.forEach(evt => document.body.addEventListener(evt, function (e) {
-                let target = e.target.closest('pre, code');
-                if (!target) {
-                    return;
+        },
+        addCopyButton: function (target) {
+            if (target.querySelector('.ccc-copy-btn')) {
+                return;
+            }
+            if (!target.dataset.cccPrevPos) {
+                target.dataset.cccPrevPos = target.style.position;
+                if (getComputedStyle(target).position === 'static') {
+                    target.style.position = 'relative';
                 }
-                if (evt === 'mouseover' && e.relatedTarget && target.contains(e.relatedTarget)) {
-                    // ignore events fired from element descendants
-                    return;
-                }
-                if (!cobj.copyActive) {
-                    return;
-                }
-                if (navigator.clipboard) {
-                    navigator.clipboard.writeText(target.textContent).then(
-                        function(){
-                            cobj.showMsg("Code snippet copied successfully !") // success
-                        })
-                      .catch(
-                         function() {
-                            cobj.showMsg("Oops!! some error occurred while copying code snippet."); // error
-                      });
-                } else {
-                    let range = document.createRange();
-
-                    range.selectNode(target);
-                    window.getSelection().removeAllRanges();
-                    window.getSelection().addRange(range);
-                    document.execCommand("copy") ? cobj.showMsg("Code snippet copied successfully !") : cobj.showMsg("Oops!! some error occurred while copying code snippet.");
-                    window.getSelection().empty();
-                }
-            }));
+            }
+            let btn = document.createElement('button');
+            btn.className = 'ccc-copy-btn';
+            btn.type = 'button';
+            btn.textContent = 'Copy';
+            btn.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                this.copyFromElement(target);
+            });
+            target.appendChild(btn);
+        },
+        removeCopyButton: function (target) {
+            let btn = target.querySelector('.ccc-copy-btn');
+            if (btn) {
+                btn.remove();
+            }
+            if (target.dataset.cccPrevPos !== undefined) {
+                target.style.position = target.dataset.cccPrevPos;
+                delete target.dataset.cccPrevPos;
+            }
+        },
+        copyFromElement: function (target) {
+            if (!this.copyActive) {
+                return;
+            }
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(target.textContent).then(
+                    () => {
+                        this.showMsg("Code snippet copied successfully !");
+                    })
+                    .catch(() => {
+                        this.showMsg("Oops!! some error occurred while copying code snippet.");
+                    });
+            } else {
+                let range = document.createRange();
+                range.selectNode(target);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand("copy") ? this.showMsg("Code snippet copied successfully !") : this.showMsg("Oops!! some error occurred while copying code snippet.");
+                window.getSelection().empty();
+            }
         },
         registerShortcut: function () {
             let cobj = this;

@@ -30,6 +30,22 @@
     }
 }
 
+.ccc-copy-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: none;
+    font-size: 12px;
+    padding: 2px 6px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+pre:hover .ccc-copy-btn,
+code:hover .ccc-copy-btn {
+    display: block;
+}
+
 @keyframes fadein {
     from {
         right: 0;
