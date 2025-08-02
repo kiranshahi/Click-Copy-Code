@@ -1,11 +1,15 @@
 (function(){
     const modeSelect = document.getElementById('interactionMode');
     const saveBtn = document.getElementById('save');
+    const resetBtn = document.getElementById('reset');
     const schemeRadios = document.querySelectorAll('input[name="scheme"]');
     const customColors = document.getElementById('customColors');
     const bgColor = document.getElementById('bgColor');
     const textColor = document.getElementById('textColor');
     const status = document.getElementById('status');
+
+    const defaultMode = 'dblclick';
+    const defaultTheme = {scheme: 'dark', bgColor: '#6002ee', textColor: '#f5f5f5'};
 
     function setThemeValues(theme){
         const radio = document.querySelector(`input[name="scheme"][value="${theme.scheme}"]`);
@@ -22,21 +26,16 @@
     }
 
     function load(){
-        const fallbackTheme = {scheme: 'dark', bgColor: '#6002ee', textColor: '#f5f5f5'};
         if(typeof chrome !== "undefined" && chrome.storage && chrome.storage.local){
             chrome.storage.local.get(['interactionMode', 'theme'], function(res){
-                if(res.interactionMode){
-                    modeSelect.value = res.interactionMode;
-                }
-                setThemeValues(res.theme || fallbackTheme);
+                modeSelect.value = res.interactionMode || defaultMode;
+                setThemeValues(res.theme || defaultTheme);
             });
         } else {
             const val = localStorage.getItem('interactionMode');
-            if(val){
-                modeSelect.value = val;
-            }
+            modeSelect.value = val || defaultMode;
             const themeStr = localStorage.getItem('theme');
-            const theme = themeStr ? JSON.parse(themeStr) : fallbackTheme;
+            const theme = themeStr ? JSON.parse(themeStr) : defaultTheme;
             setThemeValues(theme);
         }
     }
@@ -62,10 +61,27 @@
         }
     }
 
+    function resetOptions(){
+        modeSelect.value = defaultMode;
+        setThemeValues(defaultTheme);
+        if(typeof chrome !== "undefined" && chrome.storage && chrome.storage.local){
+            chrome.storage.local.set({interactionMode: defaultMode, theme: defaultTheme}, function(){
+                status.textContent = 'Defaults restored!';
+                setTimeout(()=> status.textContent='', 1000);
+            });
+        } else {
+            localStorage.setItem('interactionMode', defaultMode);
+            localStorage.setItem('theme', JSON.stringify(defaultTheme));
+            status.textContent = 'Defaults restored!';
+            setTimeout(()=> status.textContent='', 1000);
+        }
+    }
+
     schemeRadios.forEach(r => r.addEventListener('change', function(){
         customColors.style.display = this.value === 'custom' ? 'block' : 'none';
     }));
 
     saveBtn.addEventListener('click', save);
+    resetBtn.addEventListener('click', resetOptions);
     document.addEventListener('DOMContentLoaded', load);
 })();
