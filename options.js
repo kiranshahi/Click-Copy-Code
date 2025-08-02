@@ -32,7 +32,7 @@
             radio.checked = true;
         }
         if(theme.scheme === 'custom'){
-            customColors.style.display = 'block';
+            customColors.style.display = 'flex';
             if(theme.bgColor){ bgColor.value = theme.bgColor; }
             if(theme.textColor){ textColor.value = theme.textColor; }
         }else{
@@ -104,7 +104,7 @@
     }
 
     schemeRadios.forEach(r => r.addEventListener('change', function(){
-        customColors.style.display = this.value === 'custom' ? 'block' : 'none';
+        customColors.style.display = this.value === 'custom' ? 'flex' : 'none';
         updatePreview();
     }));
     bgColor.addEventListener('input', updatePreview);
