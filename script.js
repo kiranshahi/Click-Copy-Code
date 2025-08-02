@@ -94,8 +94,11 @@
             if (!this.copyActive) {
                 return;
             }
+            let clone = target.cloneNode(true);
+            clone.querySelectorAll('.ccc-copy-btn').forEach(btn => btn.remove());
+            let copyText = clone.textContent;
             if (navigator.clipboard) {
-                navigator.clipboard.writeText(target.textContent).then(
+                navigator.clipboard.writeText(copyText).then(
                     () => {
                         this.showMsg("Code snippet copied successfully !");
                     })
@@ -103,12 +106,15 @@
                         this.showMsg("Oops!! some error occurred while copying code snippet.");
                     });
             } else {
-                let range = document.createRange();
-                range.selectNode(target);
-                window.getSelection().removeAllRanges();
-                window.getSelection().addRange(range);
+                let textarea = document.createElement('textarea');
+                textarea.value = copyText;
+                textarea.style.position = 'fixed';
+                textarea.style.top = '-1000px';
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
                 document.execCommand("copy") ? this.showMsg("Code snippet copied successfully !") : this.showMsg("Oops!! some error occurred while copying code snippet.");
-                window.getSelection().empty();
+                document.body.removeChild(textarea);
             }
         },
         registerShortcut: function () {
