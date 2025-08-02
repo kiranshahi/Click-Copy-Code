@@ -7,9 +7,24 @@
     const bgColor = document.getElementById('bgColor');
     const textColor = document.getElementById('textColor');
     const status = document.getElementById('status');
+    const toastPreview = document.getElementById('toastPreview');
 
     const defaultMode = 'dblclick';
     const defaultTheme = {scheme: 'dark', bgColor: '#6002ee', textColor: '#f5f5f5'};
+
+    function applyPreview(theme){
+        if(!toastPreview) return;
+        if(theme.scheme === 'light'){
+            toastPreview.style.backgroundColor = '#f5f5f5';
+            toastPreview.style.color = '#000';
+        } else if(theme.scheme === 'custom'){
+            toastPreview.style.backgroundColor = theme.bgColor || '#6002ee';
+            toastPreview.style.color = theme.textColor || '#f5f5f5';
+        } else {
+            toastPreview.style.backgroundColor = '#6002ee';
+            toastPreview.style.color = '#f5f5f5';
+        }
+    }
 
     function setThemeValues(theme){
         const radio = document.querySelector(`input[name="scheme"][value="${theme.scheme}"]`);
@@ -23,6 +38,7 @@
         }else{
             customColors.style.display = 'none';
         }
+        applyPreview(theme);
     }
 
     function load(){
@@ -77,9 +93,22 @@
         }
     }
 
+    function updatePreview(){
+        const scheme = document.querySelector('input[name="scheme"]:checked').value;
+        const theme = {scheme};
+        if(scheme === 'custom'){
+            theme.bgColor = bgColor.value;
+            theme.textColor = textColor.value;
+        }
+        applyPreview(theme);
+    }
+
     schemeRadios.forEach(r => r.addEventListener('change', function(){
         customColors.style.display = this.value === 'custom' ? 'block' : 'none';
+        updatePreview();
     }));
+    bgColor.addEventListener('input', updatePreview);
+    textColor.addEventListener('input', updatePreview);
 
     saveBtn.addEventListener('click', save);
     resetBtn.addEventListener('click', resetOptions);
