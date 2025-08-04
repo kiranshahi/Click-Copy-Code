@@ -1,116 +1,129 @@
-(function(){
-    const modeSelect = document.getElementById('interactionMode');
-    const saveBtn = document.getElementById('save');
-    const resetBtn = document.getElementById('reset');
-    const schemeRadios = document.querySelectorAll('input[name="scheme"]');
-    const customColors = document.getElementById('customColors');
-    const bgColor = document.getElementById('bgColor');
-    const textColor = document.getElementById('textColor');
-    const status = document.getElementById('status');
-    const toastPreview = document.getElementById('toastPreview');
+// Options page logic wrapped in an object to manage state and behaviour
+(function () {
+    const optionsManager = {
+        modeSelect: null,
+        saveBtn: null,
+        resetBtn: null,
+        schemeRadios: null,
+        customColors: null,
+        bgColor: null,
+        textColor: null,
+        status: null,
+        toastPreview: null,
+        defaultMode: 'dblclick',
+        defaultTheme: { scheme: 'dark', bgColor: '#6002ee', textColor: '#f5f5f5' },
+        init: function () {
+            this.modeSelect = document.getElementById('interactionMode');
+            this.saveBtn = document.getElementById('save');
+            this.resetBtn = document.getElementById('reset');
+            this.schemeRadios = document.querySelectorAll('input[name="scheme"]');
+            this.customColors = document.getElementById('customColors');
+            this.bgColor = document.getElementById('bgColor');
+            this.textColor = document.getElementById('textColor');
+            this.status = document.getElementById('status');
+            this.toastPreview = document.getElementById('toastPreview');
 
-    const defaultMode = 'dblclick';
-    const defaultTheme = {scheme: 'dark', bgColor: '#6002ee', textColor: '#f5f5f5'};
+            this.schemeRadios.forEach(r => r.addEventListener('change', (e) => {
+                this.customColors.style.display = e.target.value === 'custom' ? 'flex' : 'none';
+                this.updatePreview();
+            }));
+            this.bgColor.addEventListener('input', () => this.updatePreview());
+            this.textColor.addEventListener('input', () => this.updatePreview());
+            this.saveBtn.addEventListener('click', () => this.save());
+            this.resetBtn.addEventListener('click', () => this.resetOptions());
 
-    function applyPreview(theme){
-        if(!toastPreview) return;
-        if(theme.scheme === 'light'){
-            toastPreview.style.backgroundColor = '#f5f5f5';
-            toastPreview.style.color = '#000';
-        } else if(theme.scheme === 'custom'){
-            toastPreview.style.backgroundColor = theme.bgColor || '#6002ee';
-            toastPreview.style.color = theme.textColor || '#f5f5f5';
-        } else {
-            toastPreview.style.backgroundColor = '#6002ee';
-            toastPreview.style.color = '#f5f5f5';
+            this.load();
+        },
+        applyPreview: function (theme) {
+            if (!this.toastPreview) return;
+            if (theme.scheme === 'light') {
+                this.toastPreview.style.backgroundColor = '#f5f5f5';
+                this.toastPreview.style.color = '#000';
+            } else if (theme.scheme === 'custom') {
+                this.toastPreview.style.backgroundColor = theme.bgColor || '#6002ee';
+                this.toastPreview.style.color = theme.textColor || '#f5f5f5';
+            } else {
+                this.toastPreview.style.backgroundColor = '#6002ee';
+                this.toastPreview.style.color = '#f5f5f5';
+            }
+        },
+        setThemeValues: function (theme) {
+            const radio = document.querySelector(`input[name="scheme"][value="${theme.scheme}"]`);
+            if (radio) {
+                radio.checked = true;
+            }
+            if (theme.scheme === 'custom') {
+                this.customColors.style.display = 'flex';
+                if (theme.bgColor) { this.bgColor.value = theme.bgColor; }
+                if (theme.textColor) { this.textColor.value = theme.textColor; }
+            } else {
+                this.customColors.style.display = 'none';
+            }
+            this.applyPreview(theme);
+        },
+        load: function () {
+            if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+                chrome.storage.local.get(['interactionMode', 'theme'], (res) => {
+                    this.modeSelect.value = res.interactionMode || this.defaultMode;
+                    this.setThemeValues(res.theme || this.defaultTheme);
+                });
+            } else {
+                const val = localStorage.getItem('interactionMode');
+                this.modeSelect.value = val || this.defaultMode;
+                const themeStr = localStorage.getItem('theme');
+                const theme = themeStr ? JSON.parse(themeStr) : this.defaultTheme;
+                this.setThemeValues(theme);
+            }
+        },
+        save: function () {
+            const mode = this.modeSelect.value;
+            const scheme = document.querySelector('input[name="scheme"]:checked').value;
+            const theme = { scheme };
+            if (scheme === 'custom') {
+                theme.bgColor = this.bgColor.value;
+                theme.textColor = this.textColor.value;
+            }
+            if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+                chrome.storage.local.set({ interactionMode: mode, theme }, () => {
+                    this.status.textContent = 'Saved!';
+                    setTimeout(() => this.status.textContent = '', 1000);
+                });
+            } else {
+                localStorage.setItem('interactionMode', mode);
+                localStorage.setItem('theme', JSON.stringify(theme));
+                this.status.textContent = 'Saved!';
+                setTimeout(() => this.status.textContent = '', 1000);
+            }
+        },
+        resetOptions: function () {
+            this.modeSelect.value = this.defaultMode;
+            this.setThemeValues(this.defaultTheme);
+            if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+                chrome.storage.local.set({ interactionMode: this.defaultMode, theme: this.defaultTheme }, () => {
+                    this.status.textContent = 'Defaults restored!';
+                    setTimeout(() => this.status.textContent = '', 1000);
+                });
+            } else {
+                localStorage.setItem('interactionMode', this.defaultMode);
+                localStorage.setItem('theme', JSON.stringify(this.defaultTheme));
+                this.status.textContent = 'Defaults restored!';
+                setTimeout(() => this.status.textContent = '', 1000);
+            }
+        },
+        updatePreview: function () {
+            const scheme = document.querySelector('input[name="scheme"]:checked').value;
+            const theme = { scheme };
+            if (scheme === 'custom') {
+                theme.bgColor = this.bgColor.value;
+                theme.textColor = this.textColor.value;
+            }
+            this.applyPreview(theme);
         }
-    }
+    };
 
-    function setThemeValues(theme){
-        const radio = document.querySelector(`input[name="scheme"][value="${theme.scheme}"]`);
-        if(radio){
-            radio.checked = true;
-        }
-        if(theme.scheme === 'custom'){
-            customColors.style.display = 'flex';
-            if(theme.bgColor){ bgColor.value = theme.bgColor; }
-            if(theme.textColor){ textColor.value = theme.textColor; }
-        }else{
-            customColors.style.display = 'none';
-        }
-        applyPreview(theme);
-    }
-
-    function load(){
-        if(typeof chrome !== "undefined" && chrome.storage && chrome.storage.local){
-            chrome.storage.local.get(['interactionMode', 'theme'], function(res){
-                modeSelect.value = res.interactionMode || defaultMode;
-                setThemeValues(res.theme || defaultTheme);
-            });
-        } else {
-            const val = localStorage.getItem('interactionMode');
-            modeSelect.value = val || defaultMode;
-            const themeStr = localStorage.getItem('theme');
-            const theme = themeStr ? JSON.parse(themeStr) : defaultTheme;
-            setThemeValues(theme);
-        }
-    }
-
-    function save(){
-        const mode = modeSelect.value;
-        const scheme = document.querySelector('input[name="scheme"]:checked').value;
-        const theme = {scheme};
-        if(scheme === 'custom'){
-            theme.bgColor = bgColor.value;
-            theme.textColor = textColor.value;
-        }
-        if(typeof chrome !== "undefined" && chrome.storage && chrome.storage.local){
-            chrome.storage.local.set({interactionMode: mode, theme}, function(){
-                status.textContent = 'Saved!';
-                setTimeout(()=> status.textContent='', 1000);
-            });
-        } else {
-            localStorage.setItem('interactionMode', mode);
-            localStorage.setItem('theme', JSON.stringify(theme));
-            status.textContent = 'Saved!';
-            setTimeout(()=> status.textContent='', 1000);
-        }
-    }
-
-    function resetOptions(){
-        modeSelect.value = defaultMode;
-        setThemeValues(defaultTheme);
-        if(typeof chrome !== "undefined" && chrome.storage && chrome.storage.local){
-            chrome.storage.local.set({interactionMode: defaultMode, theme: defaultTheme}, function(){
-                status.textContent = 'Defaults restored!';
-                setTimeout(()=> status.textContent='', 1000);
-            });
-        } else {
-            localStorage.setItem('interactionMode', defaultMode);
-            localStorage.setItem('theme', JSON.stringify(defaultTheme));
-            status.textContent = 'Defaults restored!';
-            setTimeout(()=> status.textContent='', 1000);
-        }
-    }
-
-    function updatePreview(){
-        const scheme = document.querySelector('input[name="scheme"]:checked').value;
-        const theme = {scheme};
-        if(scheme === 'custom'){
-            theme.bgColor = bgColor.value;
-            theme.textColor = textColor.value;
-        }
-        applyPreview(theme);
-    }
-
-    schemeRadios.forEach(r => r.addEventListener('change', function(){
-        customColors.style.display = this.value === 'custom' ? 'flex' : 'none';
-        updatePreview();
-    }));
-    bgColor.addEventListener('input', updatePreview);
-    textColor.addEventListener('input', updatePreview);
-
-    saveBtn.addEventListener('click', save);
-    resetBtn.addEventListener('click', resetOptions);
-    document.addEventListener('DOMContentLoaded', load);
+    function Options() { }
+    Options.prototype.initialize = function () {
+        optionsManager.init();
+    };
+    new Options().initialize();
 })();
