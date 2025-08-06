@@ -1,3 +1,5 @@
+import { applyTheme } from './themeUtils.js';
+
 (function () {
     "use strict";
     let ccc = {
@@ -16,7 +18,7 @@
             let div = document.createElement('div');
             div.setAttribute("id", "cccToast");
             document.body.appendChild(div);
-            this.applyTheme();
+            applyTheme(div, this.theme);
         },
         copyCode: function () {
             let cobj = this;
@@ -171,24 +173,9 @@
                 localStorage.setItem('theme', JSON.stringify(this.theme));
             }
         },
-        applyTheme: function(){
-            const x = document.getElementById('cccToast');
-            if(!x) return;
-            const t = this.theme || {};
-            if(t.scheme === 'light'){
-                x.style.backgroundColor = '#f5f5f5';
-                x.style.color = '#000';
-            } else if(t.scheme === 'custom'){
-                x.style.backgroundColor = t.bgColor || '#6002ee';
-                x.style.color = t.textColor || '#f5f5f5';
-            } else {
-                x.style.backgroundColor = '#6002ee';
-                x.style.color = '#f5f5f5';
-            }
-        },
         showMsg: function (message) {
             let x = document.getElementById("cccToast");
-            this.applyTheme();
+            applyTheme(x, this.theme);
             x.className = "show";
             x.textContent = message;
             setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
