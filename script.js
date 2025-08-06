@@ -92,6 +92,9 @@ import { applyTheme } from './themeUtils.js';
                 delete target.dataset.cccPrevPos;
             }
         },
+        removeAllCopyButtons: function () {
+            document.querySelectorAll('.ccc-copy-btn').forEach(btn => btn.remove());
+        },
         copyFromElement: function (target) {
             if (!this.copyActive) {
                 return;
@@ -128,6 +131,9 @@ import { applyTheme } from './themeUtils.js';
                         return;
                     }
                     cobj.copyActive = !cobj.copyActive;
+                    if (!cobj.copyActive) {
+                        cobj.removeAllCopyButtons();
+                    }
                     cobj.saveState();
                     cobj.showMsg(cobj.copyActive ? 'Copying enabled' : 'Copying disabled');
                 }
