@@ -10,6 +10,9 @@
     "48": "images/curly-brackets-64.png",
     "128": "images/curly-brackets-128.png"
   },
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
       "matches": [ "<all_urls>" ],
@@ -23,7 +26,8 @@
     "open_in_tab": true
   },
   "permissions": [
-    "storage"
+    "storage",
+    "contextMenus"
   ],
   "manifest_version": 3
 }
