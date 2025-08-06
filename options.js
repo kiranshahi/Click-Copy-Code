@@ -1,4 +1,6 @@
 // Options page logic wrapped in an object to manage state and behaviour
+import { applyPreview } from './themeUtils.js';
+
 (function () {
     const optionsManager = {
         modeSelect: null,
@@ -34,19 +36,6 @@
 
             this.load();
         },
-        applyPreview: function (theme) {
-            if (!this.toastPreview) return;
-            if (theme.scheme === 'light') {
-                this.toastPreview.style.backgroundColor = '#f5f5f5';
-                this.toastPreview.style.color = '#000';
-            } else if (theme.scheme === 'custom') {
-                this.toastPreview.style.backgroundColor = theme.bgColor || '#6002ee';
-                this.toastPreview.style.color = theme.textColor || '#f5f5f5';
-            } else {
-                this.toastPreview.style.backgroundColor = '#6002ee';
-                this.toastPreview.style.color = '#f5f5f5';
-            }
-        },
         setThemeValues: function (theme) {
             const radio = document.querySelector(`input[name="scheme"][value="${theme.scheme}"]`);
             if (radio) {
@@ -59,7 +48,7 @@
             } else {
                 this.customColors.style.display = 'none';
             }
-            this.applyPreview(theme);
+            applyPreview(this.toastPreview, theme);
         },
         load: function () {
             if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
@@ -117,7 +106,7 @@
                 theme.bgColor = this.bgColor.value;
                 theme.textColor = this.textColor.value;
             }
-            this.applyPreview(theme);
+            applyPreview(this.toastPreview, theme);
         }
     };
 
