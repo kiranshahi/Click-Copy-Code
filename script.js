@@ -121,6 +121,10 @@
             let cobj = this;
             window.addEventListener('keydown', function (e) {
                 if (e.altKey && (e.key === 'c' || e.key === 'C')) {
+                    let activeElem = document.activeElement;
+                    if (activeElem && (activeElem.tagName === 'INPUT' || activeElem.tagName === 'TEXTAREA' || activeElem.isContentEditable)) {
+                        return;
+                    }
                     cobj.copyActive = !cobj.copyActive;
                     cobj.saveState();
                     cobj.showMsg(cobj.copyActive ? 'Copying enabled' : 'Copying disabled');
