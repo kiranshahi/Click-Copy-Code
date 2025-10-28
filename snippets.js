@@ -9,6 +9,7 @@ const DEFAULT_SETTINGS = {
     includeMarkdownHeader: true,
     sanitize: {
         stripPrompts: true,
+        stripLineNumbers: true,
         stripComments: false,
         stripEmptyLines: false
     },
