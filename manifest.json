@@ -10,6 +10,14 @@
     "48": "images/curly-brackets-64.png",
     "128": "images/curly-brackets-128.png"
   },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/curly-brackets-16.png",
+      "32": "images/curly-brackets-32.png",
+      "48": "images/curly-brackets-64.png"
+    }
+  },
   "background": {
     "service_worker": "background.js",
     "type": "module"
