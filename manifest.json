@@ -1,6 +1,7 @@
 {
   "name": "Click Copy {Code} – One-Click Copy",
-  "version": "0.0.3",
+  "short_name": "ClickCopyCode",
+  "version": "0.1.0",
   "author": "Kiran Shahi",
   "homepage_url": "https://github.com/kiranshahi/Click-Copy-Code",
   "description": "Software engineer's friend. Copy code from any website with a single click.",

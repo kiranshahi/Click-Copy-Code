@@ -31,6 +31,45 @@ body {
   border-bottom: 1px solid rgba(148, 163, 184, 0.2);
 }
 
+.status-banner {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+}
+
+.status-banner__message {
+  flex: 1;
+  font-size: 0.8rem;
+}
+
+.status-banner__action {
+  flex-shrink: 0;
+  border: none;
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.status-banner__action:hover {
+  background: rgba(248, 113, 113, 0.35);
+  color: #fee2e2;
+}
+
+.tag-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .input {
   width: 100%;
   border: 1px solid rgba(148, 163, 184, 0.4);
@@ -121,13 +160,10 @@ body {
   color: rgba(226, 232, 240, 0.95);
   background: rgba(30, 41, 59, 0.65);
   border-radius: 8px;
-  padding: 8px;
-  max-height: 3.6em;
-  overflow: hidden;
+  padding: 12px;
   position: relative;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  max-height: 140px;
+  overflow: hidden;
 }
 
 .snippet-preview::after {
@@ -231,6 +267,22 @@ body {
   .popup__footer {
     background: rgba(255, 255, 255, 0.85);
     border-color: rgba(203, 213, 225, 0.7);
+  }
+
+  .status-banner {
+    border-color: rgba(248, 113, 113, 0.6);
+    background: rgba(254, 226, 226, 0.85);
+    color: #b91c1c;
+  }
+
+  .status-banner__action {
+    background: rgba(254, 202, 202, 0.9);
+    color: #7f1d1d;
+  }
+
+  .status-banner__action:hover {
+    background: rgba(252, 165, 165, 0.9);
+    color: #7f1d1d;
   }
 
   .input {
