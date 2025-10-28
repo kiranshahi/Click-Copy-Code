@@ -1,5 +1,6 @@
 import {
   initSettingsIfMissing,
+  loadSettings,
   addSnippet,
   getSnippets,
   deleteSnippet,
@@ -16,19 +17,30 @@ function generateId() {
   return `snippet-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-async function handleSaveSnippet(payload = {}) {
+function normalizePayload(payload = {}) {
   const now = Date.now();
-  const snippet = {
+  const code = typeof payload.code === 'string' ? payload.code : '';
+  const rawTags = Array.isArray(payload.tags) ? payload.tags : [];
+  return {
     id: payload.id || generateId(),
-    code: payload.code || '',
+    code,
     sourceUrl: payload.sourceUrl || '',
     pageTitle: payload.pageTitle || '',
     language: payload.language || '',
-    tags: Array.isArray(payload.tags) ? payload.tags.slice() : [],
+    tags: rawTags.map((tag) => (typeof tag === 'string' ? tag.trim() : '')).filter(Boolean),
     createdAt: payload.createdAt || now,
-    hash: payload.hash || hashCode(payload.code || ''),
+    hash: payload.hash || hashCode(code),
   };
-  await addSnippet(snippet, payload.maxHistory);
+}
+
+async function handleSaveSnippet(payload = {}) {
+  const settings = await loadSettings();
+  const isUpdate = Boolean(payload.id);
+  if (!settings.savingEnabled && !isUpdate) {
+    return { skipped: true };
+  }
+  const snippet = normalizePayload(payload);
+  await addSnippet(snippet, payload.maxHistory ?? settings.maxHistory);
   return { snippet };
 }
 
@@ -41,12 +53,13 @@ async function handleDeleteSnippet(payload = {}) {
   if (payload.id) {
     await deleteSnippet(payload.id);
   }
-  return { id: payload.id }; 
+  return { id: payload.id };
 }
 
 async function handleExport(format) {
   const blob = format === 'json' ? await exportSnippetsJSON() : await exportSnippetsMarkdown();
-  const urlFactory = (typeof globalThis !== 'undefined' && globalThis.URL) || (typeof URL !== 'undefined' ? URL : null);
+  const urlFactory = (typeof globalThis !== 'undefined' && globalThis.URL)
+    || (typeof URL !== 'undefined' ? URL : null);
   if (!urlFactory || typeof urlFactory.createObjectURL !== 'function') {
     throw new Error('URL.createObjectURL is not supported in this environment');
   }
@@ -59,6 +72,11 @@ async function handleSearchSnippets(payload = {}) {
   return { snippets };
 }
 
+async function handleGetSettings() {
+  const settings = await loadSettings();
+  return { settings };
+}
+
 const messageHandlers = {
   'save-snippet': handleSaveSnippet,
   'request-snippets': handleRequestSnippets,
@@ -66,6 +84,7 @@ const messageHandlers = {
   'export-json': () => handleExport('json'),
   'export-md': () => handleExport('md'),
   'search-snippets': handleSearchSnippets,
+  'get-settings': handleGetSettings,
 };
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -74,13 +93,13 @@ chrome.runtime.onInstalled.addListener(() => {
     title: 'Copy Code',
     contexts: ['all'],
   });
-  initSettingsIfMissing().catch((error) => console.error('Failed to init settings on install', error));
+  initSettingsIfMissing().catch((error) => console.error('Failed to initialise settings on install', error));
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     initSettingsIfMissing().catch((error) => {
-      console.error('Failed to init settings on activate', error);
+      console.error('Failed to initialise settings on activate', error);
     }),
   );
 });

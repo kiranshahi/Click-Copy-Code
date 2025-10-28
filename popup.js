@@ -5,10 +5,13 @@ const snippetList = document.getElementById('snippetList');
 const emptyState = document.getElementById('emptyState');
 const exportJsonButton = document.getElementById('exportJson');
 const exportMarkdownButton = document.getElementById('exportMarkdown');
+const savingBanner = document.getElementById('savingBanner');
+const openOptionsButton = document.getElementById('openOptions');
 
 const state = {
   snippets: [],
   tags: new Set(),
+  settings: null,
 };
 
 function sendMessage(type, payload = {}) {
@@ -47,8 +50,8 @@ function matchesSnippet(snippet, query, tags) {
     .map((item) => item.toLowerCase());
 
   const matchesQuery = normalizedQuery
-    ? haystacks.some((value) => value.includes(normalizedQuery)) ||
-      (snippet.tags || []).some((tag) => tag.toLowerCase().includes(normalizedQuery))
+    ? haystacks.some((value) => value.includes(normalizedQuery))
+      || (snippet.tags || []).some((tag) => tag.toLowerCase().includes(normalizedQuery))
     : true;
 
   const snippetTags = (snippet.tags || []).map((tag) => tag.toLowerCase());
@@ -210,6 +213,27 @@ async function loadSnippets() {
   }
 }
 
+function updateSavingBanner(settings) {
+  const enabled = settings?.savingEnabled !== false;
+  if (enabled) {
+    savingBanner.hidden = true;
+  } else {
+    savingBanner.hidden = false;
+  }
+}
+
+async function loadSettingsState() {
+  try {
+    const response = await sendMessage('get-settings');
+    state.settings = response.settings || null;
+    updateSavingBanner(state.settings);
+  } catch (error) {
+    console.error('Failed to load settings', error);
+    state.settings = null;
+    updateSavingBanner(state.settings);
+  }
+}
+
 async function copySnippet(snippet) {
   try {
     await navigator.clipboard.writeText(snippet.code || '');
@@ -322,6 +346,32 @@ async function handleExport(format) {
   }
 }
 
+function handleOpenOptions() {
+  if (typeof chrome !== 'undefined' && chrome.runtime?.openOptionsPage) {
+    chrome.runtime.openOptionsPage();
+  } else if (typeof chrome !== 'undefined' && chrome.runtime?.getURL) {
+    window.open(chrome.runtime.getURL('options.html'), '_blank');
+  }
+}
+
+function subscribeToStorageUpdates() {
+  if (!chrome.storage?.onChanged) {
+    return;
+  }
+  chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName !== 'local') {
+      return;
+    }
+    if (changes.cccSnippets) {
+      loadSnippets();
+    }
+    if (changes.cccSettings) {
+      state.settings = changes.cccSettings.newValue || null;
+      updateSavingBanner(state.settings);
+    }
+  });
+}
+
 snippetList.addEventListener('click', (event) => {
   handleActionClick(event);
 });
@@ -331,5 +381,12 @@ tagInput.addEventListener('input', handleInputChange);
 
 exportJsonButton.addEventListener('click', () => handleExport('json'));
 exportMarkdownButton.addEventListener('click', () => handleExport('md'));
+openOptionsButton.addEventListener('click', handleOpenOptions);
 
-loadSnippets();
+Promise.all([loadSettingsState(), loadSnippets()])
+  .then(() => {
+    subscribeToStorageUpdates();
+  })
+  .catch((error) => {
+    console.error('Failed to initialise popup', error);
+  });

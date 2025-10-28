@@ -9,6 +9,10 @@
 <body>
   <div class="popup">
     <header class="popup__header">
+      <div id="savingBanner" class="status-banner" hidden>
+        <span class="status-banner__message">Snippet saving is disabled. Enable it in options to collect new snippets.</span>
+        <button id="openOptions" class="status-banner__action" type="button">Open options</button>
+      </div>
       <input id="searchInput" class="input input--search" type="search" placeholder="Search snippets" aria-label="Search snippets" />
       <div class="tag-filter">
         <input id="tagInput" class="input input--tag" list="tagSuggestions" placeholder="Filter by tag" aria-label="Filter by tag" />
