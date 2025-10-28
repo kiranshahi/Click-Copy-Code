@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code Snippets</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="popup">
+    <header class="popup__header">
+      <input id="searchInput" class="input input--search" type="search" placeholder="Search snippets" aria-label="Search snippets" />
+      <div class="tag-filter">
+        <input id="tagInput" class="input input--tag" list="tagSuggestions" placeholder="Filter by tag" aria-label="Filter by tag" />
+        <datalist id="tagSuggestions"></datalist>
+      </div>
+    </header>
+
+    <main class="popup__content">
+      <ul id="snippetList" class="snippet-list" role="list"></ul>
+      <div id="emptyState" class="empty-state" hidden>
+        <h2>No snippets yet</h2>
+        <p>Use the context menu or keyboard shortcut to save code snippets as you browse.</p>
+      </div>
+    </main>
+
+    <footer class="popup__footer">
+      <button id="exportJson" class="footer-button" type="button">Export JSON</button>
+      <button id="exportMarkdown" class="footer-button" type="button">Export Markdown</button>
+    </footer>
+  </div>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
