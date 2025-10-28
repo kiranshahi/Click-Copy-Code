@@ -1,17 +1,26 @@
-import { applyTheme } from './themeUtils.js';
-
-(function () {
+(async function () {
     "use strict";
+
+    const runtime = (typeof chrome !== 'undefined' && chrome.runtime)
+        ? chrome.runtime
+        : ((typeof browser !== 'undefined' && browser.runtime) ? browser.runtime : null);
+
+    const { applyTheme } = await ((runtime && runtime.getURL)
+        ? import(runtime.getURL('themeUtils.js'))
+        : import('./themeUtils.js'));
+
     let ccc = {
         copyActive: true,
         interactionMode: 'dblclick',
         theme: {scheme: 'dark', bgColor: '#6002ee', textColor: '#f5f5f5'},
+        lastContextTarget: null,
         init: function () {
             let cobj = this;
             this.loadState(function () {
                 cobj.notificationDom();
                 cobj.copyCode();
                 cobj.registerShortcut();
+                cobj.registerMessageListener();
             });
         },
         notificationDom: function () {
@@ -61,6 +70,18 @@ import { applyTheme } from './themeUtils.js';
                     cobj.removeCopyButton(target);
                 }, true);
             }
+            document.body.addEventListener('contextmenu', function (e) {
+                let target = e.target.closest('pre, code');
+                if (!target || !cobj.copyActive) {
+                    cobj.lastContextTarget = null;
+                    return;
+                }
+                if (target.tagName.toLowerCase() === 'code') {
+                    let pre = target.closest('pre');
+                    if (pre) target = pre;
+                }
+                cobj.lastContextTarget = target;
+            });
         },
         addCopyButton: function (target) {
             if (target.querySelector('.ccc-copy-btn')) {
@@ -102,6 +123,7 @@ import { applyTheme } from './themeUtils.js';
             let clone = target.cloneNode(true);
             clone.querySelectorAll('.ccc-copy-btn').forEach(btn => btn.remove());
             let copyText = clone.textContent;
+            this.lastContextTarget = target;
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(copyText).then(
                     () => {
@@ -133,9 +155,28 @@ import { applyTheme } from './themeUtils.js';
                     cobj.copyActive = !cobj.copyActive;
                     if (!cobj.copyActive) {
                         cobj.removeAllCopyButtons();
+                        cobj.lastContextTarget = null;
                     }
                     cobj.saveState();
                     cobj.showMsg(cobj.copyActive ? 'Copying enabled' : 'Copying disabled');
+                }
+            });
+        },
+        registerMessageListener: function () {
+            if (!runtime || !runtime.onMessage) {
+                return;
+            }
+            runtime.onMessage.addListener((message, sender, sendResponse) => {
+                if (!message || message.action !== 'copy-code') {
+                    return;
+                }
+                if (this.copyActive && this.lastContextTarget) {
+                    this.copyFromElement(this.lastContextTarget);
+                    if (typeof sendResponse === 'function') {
+                        sendResponse({ success: true });
+                    }
+                } else if (typeof sendResponse === 'function') {
+                    sendResponse({ success: false });
                 }
             });
         },
