@@ -38,5 +38,11 @@
     "storage",
     "contextMenus"
   ],
+  "web_accessible_resources": [
+    {
+      "resources": ["themeUtils.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "manifest_version": 3
 }
