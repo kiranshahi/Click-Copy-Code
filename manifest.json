@@ -11,6 +11,7 @@
     "128": "images/curly-brackets-128.png"
   },
   "action": {
+    "default_title": "Click Copy {Code}",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "images/curly-brackets-16.png",
@@ -36,8 +37,11 @@
   },
   "permissions": [
     "storage",
+    "activeTab",
+    "scripting",
     "contextMenus"
   ],
+  "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {
       "resources": ["themeUtils.js"],
